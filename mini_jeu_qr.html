@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attrape la cible !</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111827;
+      color: white;
+      text-align: center;
+      overflow: hidden;
+    }
+    h1 { margin: 18px 0 8px; }
+    #infos {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+    #start {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 22px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #22c55e;
+      color: white;
+      margin-bottom: 12px;
+    }
+    #game {
+      position: relative;
+      width: min(95vw, 700px);
+      height: 65vh;
+      min-height: 350px;
+      margin: auto;
+      border: 3px solid white;
+      border-radius: 18px;
+      background: #1f2937;
+      overflow: hidden;
+    }
+    #target {
+      position: absolute;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: #ef4444;
+      border: 5px solid white;
+      box-shadow: 0 0 0 5px #ef4444;
+      cursor: pointer;
+      display: none;
+      touch-action: manipulation;
+    }
+    #message {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 Attrape la cible !</h1>
+
+  <div id="infos">
+    <div>Score : <b id="score">0</b></div>
+    <div>Temps : <b id="time">30</b>s</div>
+  </div>
+
+  <button id="start">▶ Commencer</button>
+
+  <div id="game">
+    <div id="target"></div>
+  </div>
+
+  <div id="message">Clique sur « Commencer » pour jouer !</div>
+
+  <script>
+    const game = document.getElementById("game");
+    const target = document.getElementById("target");
+    const start = document.getElementById("start");
+    const scoreText = document.getElementById("score");
+    const timeText = document.getElementById("time");
+    const message = document.getElementById("message");
+
+    let score = 0;
+    let time = 30;
+    let timer = null;
+    let playing = false;
+
+    function moveTarget() {
+      const maxX = game.clientWidth - target.offsetWidth;
+      const maxY = game.clientHeight - target.offsetHeight;
+
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+
+      target.style.left = x + "px";
+      target.style.top = y + "px";
+    }
+
+    function endGame() {
+      playing = false;
+      clearInterval(timer);
+      timer = null;
+      target.style.display = "none";
+      start.disabled = false;
+      start.textContent = "🔄 Rejouer";
+      message.textContent = "🏁 Partie terminée ! Ton score : " + score;
+    }
+
+    function startGame() {
+      score = 0;
+      time = 30;
+      playing = true;
+
+      scoreText.textContent = score;
+      timeText.textContent = time;
+      message.textContent = "Clique sur la cible le plus vite possible !";
+      start.disabled = true;
+      start.textContent = "🎮 En cours...";
+      target.style.display = "block";
+      moveTarget();
+
+      clearInterval(timer);
+      timer = setInterval(() => {
+        time--;
+        timeText.textContent = time;
+
+        if (time <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    target.addEventListener("pointerdown", () => {
+      if (!playing) return;
+      score++;
+      scoreText.textContent = score;
+      moveTarget();
+    });
+
+    start.addEventListener("click", startGame);
+  </script>
+</body>
+</html>
